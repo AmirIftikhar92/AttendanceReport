@@ -77,32 +77,31 @@ namespace AttendanceReportIndusNews
                         DataGridView_Excel.DataSource = dt;
 
                         //Group Employee Id and DateTime
-                        var date = dt.AsEnumerable().GroupBy(s => s.Field<DateTime>("sDate")).ToList();
+                        var date = dt.AsEnumerable().GroupBy(s =>  s.Field<DateTime>("sDate").ToString("MM/dd/yyyy")).ToList();
                         var employeeId = dt.AsEnumerable().GroupBy(s => s.Field<string>("Ac-No"));
-                        var byAccount = employeeId.ToDictionary(g => g.Key, g => g.Select(s => s.Field<DateTime>("sTime").("MM/dd/yyyy HH:mm")).ToArray());
-
+                        var byAccount = employeeId.ToDictionary(g => g.Key, g => g.Select(s => s.Field<DateTime>("sTime").ToString("MM/dd/yyyy HH:mm")).ToArray());
+                        var byDate = date.ToDictionary(x => x.Key, x => x.Select(s => s.Field<DateTime>("sTime").ToString("MM/dd/yyyy")).ToArray());
+                        
                         DataTable dataTable = new DataTable();
                         dataTable.Columns.Add("Id");
                         dataTable.Columns.Add("Check-In");
                         dataTable.Columns.Add("Check-Out");
-                        dataTable.Columns.Add("Duration");
+                        dataTable.Columns.Add("Date");
+                        int index = 0;
                         foreach (var item in byAccount)
                         {
-                            for (int i = 0; i < date.Count; i++)
-                            {
-                                DataRow dataRow = dataTable.NewRow();
-                                dataRow["Id"] = item.Key;
-                                dataRow["Check-In"] = item.Value.Min();
-                                dataRow["Check-Out"] = item.Value.Max();
-                                dataRow["Duration"] = item.Value.Min();
-                                dataTable.Rows.Add(dataRow);
+                            DataRow dataRow = dataTable.NewRow();
+                            dataRow["Id"] = item.Key;
+                            dataRow["Check-In"] = item.Value.Min();
+                            dataRow["Check-Out"] = item.Value.Max();
 
-                                DataGridView_Excel.DataSource = dataTable;
-                            }
-                            
+                            var min = Convert.ToDateTime(item.Value.Min());
+                            var max = Convert.ToDateTime(item.Value.Max());
+
+                            dataTable.Rows.Add(dataRow);
+
+                            DataGridView_Excel.DataSource = dataTable;
                         }
-
-                       
                     }
                 }
             }
