@@ -79,7 +79,7 @@ namespace AttendanceReportIndusNews
                         //Group Employee Id and DateTime
                         var date = dt.AsEnumerable().GroupBy(s => s.Field<DateTime>("sDate")).ToList();
                         var employeeId = dt.AsEnumerable().GroupBy(s => s.Field<string>("Ac-No"));
-                        var byAccount = employeeId.ToDictionary(g => g.Key, g => g.Select(s => s.Field<DateTime>("sTime").ToString("MM/dd/yyyy HH:mm")).ToArray());
+                        var byAccount = employeeId.ToDictionary(g => g.Key, g => g.Select(s => s.Field<DateTime>("sTime").("MM/dd/yyyy HH:mm")).ToArray());
 
                         DataTable dataTable = new DataTable();
                         dataTable.Columns.Add("Id");
@@ -94,6 +94,7 @@ namespace AttendanceReportIndusNews
                                 dataRow["Id"] = item.Key;
                                 dataRow["Check-In"] = item.Value.Min();
                                 dataRow["Check-Out"] = item.Value.Max();
+                                dataRow["Duration"] = item.Value.Min();
                                 dataTable.Rows.Add(dataRow);
 
                                 DataGridView_Excel.DataSource = dataTable;
