@@ -80,14 +80,14 @@ namespace AttendanceReportIndusNews
                         var date = dt.AsEnumerable().GroupBy(s =>  s.Field<DateTime>("sDate").ToString("MM/dd/yyyy")).ToList();
                         var employeeId = dt.AsEnumerable().GroupBy(s => s.Field<string>("Ac-No"));
                         var byAccount = employeeId.ToDictionary(g => g.Key, g => g.Select(s => s.Field<DateTime>("sTime").ToString("MM/dd/yyyy HH:mm")).ToArray());
-                        var byDate = date.ToDictionary(x => x.Key, x => x.Select(s => s.Field<DateTime>("sTime").ToString("MM/dd/yyyy")).ToArray());
+                        var byDate = date.ToDictionary(x => x.Key, x => x.Select(s => s.Field<DateTime>("sTime").ToString("MM/dd/yyyy HH:mm")).ToArray());
                         
                         DataTable dataTable = new DataTable();
                         dataTable.Columns.Add("Id");
                         dataTable.Columns.Add("Check-In");
                         dataTable.Columns.Add("Check-Out");
                         dataTable.Columns.Add("Date");
-                        int index = 0;
+                        
                         foreach (var item in byAccount)
                         {
                             DataRow dataRow = dataTable.NewRow();
@@ -95,13 +95,12 @@ namespace AttendanceReportIndusNews
                             dataRow["Check-In"] = item.Value.Min();
                             dataRow["Check-Out"] = item.Value.Max();
 
-                            var min = Convert.ToDateTime(item.Value.Min());
-                            var max = Convert.ToDateTime(item.Value.Max());
-
                             dataTable.Rows.Add(dataRow);
 
                             DataGridView_Excel.DataSource = dataTable;
                         }
+
+
                     }
                 }
             }
